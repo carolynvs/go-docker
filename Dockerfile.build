@@ -1,0 +1,17 @@
+# We are using Debian for the build image so that we have lots
+# of useful dev tools available to us
+FROM golang:1.10-stretch
+
+# Install dep
+RUN curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && \
+    chmod +x /usr/local/bin/dep
+
+# Setup our project directory
+# We will mount the source code in a volume when we call docker run
+# so I am not copying code into the container now. Just caching our dependencies.
+RUN mkdir -p /go/src/github.com/carolynvs/go-docker
+WORKDIR /go/src/github.com/carolynvs/go-docker
+
+# Install our dependencies
+COPY Gopkg.toml Gopkg.lock ./
+RUN dep ensure -vendor-only
